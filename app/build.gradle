@@ -25,3 +25,7 @@ dependencies {
     compile project(':andEngine')
     compile project(':andEnginePhysicsBox2DExtension')
 }
+//build the andEnginePhysicsBox2DExtention library by running following in cmd:
+//1) cd C:\Users\Oleksiy\Documents\Programming\AndEnginePhysicsBox2DExtension\jni
+//2) C:\Android\android-sdk\ndk-bundle\ndk-build
+//3) copy generated libs folder to the project and name it jniLibs and place it in app\src\main\
