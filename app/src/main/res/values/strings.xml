@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Game Lib</string>
+
+    <string name="loading_images">Loading Images...</string>
+    <string name="loading_sounds">Loading Sounds...</string>
+    <string name="loading_fonts">Loading Fonts...</string>
+    <string name="loading_done">Done!</string>
 </resources>
