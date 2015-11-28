@@ -1,4 +1,6 @@
-package com.lex.gamelib;
+package com.lex.gamelib.manager;
+
+import com.lex.gamelib.scenes.BaseScene;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +11,10 @@ import java.util.List;
 public class SceneManager {
 
     private static SceneManager instance;
-
-    public enum SceneType {Splash, Menu, Game, Settings}
-
     public BaseScene currentScene;
+
+    //public enum SceneType {Splash, Menu, Game, Settings, TestGame}
+    private Class[] sceneClasses;
     private List<BaseScene> initializedScenes;
 
     private SceneManager(){
@@ -24,21 +26,21 @@ public class SceneManager {
         }
         return instance;
     }
-    public void setScene(SceneType sceneType)throws ClassNotFoundException, IllegalAccessException, InstantiationException{
-        setScene(createScene(sceneType.toString()+"Scene"));
+
+    public void init(Class[] sceneClasses) {
+        this.sceneClasses = sceneClasses;
+    }
+
+    public void setScene(Class classType) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        setScene(createScene(classType));
     }
 
     public BaseScene getCurrentScene(){
         return currentScene;
     }
 
-    public SceneType getCurrentSceneType(){
-        for(SceneType t : SceneType.values()){
-            if(t.toString().equals(currentScene.getClass().getSimpleName().toString())){
-                return t;
-            }
-        }
-        return null;
+    public Class getCurrentSceneType() {
+        return currentScene.getClass();
     }
 
     private void setScene(BaseScene scene){
@@ -46,10 +48,9 @@ public class SceneManager {
         currentScene = scene;
     }
 
-    private BaseScene createScene(String s) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        BaseScene initializedScene = getInitializedScene(s);
+    private BaseScene createScene(Class clazz) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        BaseScene initializedScene = getInitializedScene(clazz);
         if(initializedScene == null) {
-            Class<?> clazz = Class.forName(s);
             initializedScene = (BaseScene) clazz.newInstance();
             initializedScenes.add(initializedScene);
             return initializedScene;
@@ -59,9 +60,10 @@ public class SceneManager {
         }
     }
 
-    private BaseScene getInitializedScene(String s){
+
+    private BaseScene getInitializedScene(Class clazz) {
         for(BaseScene baseScene : initializedScenes){
-            if(baseScene.getClass().getSimpleName().equals(s)){
+            if (clazz.isInstance(baseScene)) {
                 return baseScene;
             }
         }

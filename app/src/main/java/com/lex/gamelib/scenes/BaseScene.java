@@ -1,4 +1,7 @@
-package com.lex.gamelib;
+package com.lex.gamelib.scenes;
+
+import com.lex.gamelib.manager.ResourceManager;
+import com.lex.gamelib.manager.SceneManager;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
@@ -31,8 +34,6 @@ public abstract class BaseScene extends Scene {
     public abstract void createScene();
 
     public abstract void onBackKeyPressed();
-
-    public abstract SceneManager.SceneType getSceneType();
 
     public abstract void resetScene();
 

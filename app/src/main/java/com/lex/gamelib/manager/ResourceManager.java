@@ -1,13 +1,16 @@
-package com.lex.gamelib;
+package com.lex.gamelib.manager;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Pair;
 
 import com.lex.gamelib.FileDescriptions.DescriptionProvider;
 import com.lex.gamelib.FileDescriptions.FileDescriptionProvider;
 import com.lex.gamelib.FileDescriptions.FontDescription;
 import com.lex.gamelib.FileDescriptions.TiledTextureDescription;
+import com.lex.gamelib.R;
 import com.lex.gamelib.custom.TimedTiledTextureRegion;
 
 import org.andengine.audio.sound.Sound;
@@ -18,9 +21,12 @@ import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.bitmap.BitmapTexture;
 import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.TextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.BaseGameActivity;
+import org.andengine.util.adt.io.in.IInputStreamOpener;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -63,7 +69,7 @@ public class ResourceManager {
         return instance;
     }
 
-    public void init(BaseGameActivity activity) {
+    public void init(BaseGameActivity activity) throws IOException, JSONException {
         instance.activity = activity;
     }
 
@@ -75,33 +81,100 @@ public class ResourceManager {
         return isLoaded;
     }
 
-    public void loadResources(IResourceLoadStatus listener) throws Exception {
+    public void loadResources(final IResourceLoadStatus listener) throws Exception {
         if (isLoaded) {
             throw new Exception("Resources already loaded.");
         }
-        if (listener != null) {
-            listener.onUpdate(0, getActivity().getString(R.string.loading_images));
-        }
-        loadImages();
-        if (listener != null) {
-            listener.onUpdate(33, getActivity().getString(R.string.loading_sounds));
-        }
-        loadSounds();
-        if (listener != null) {
-            listener.onUpdate(66, getActivity().getString(R.string.loading_fonts));
-        }
-        loadFonts();
-        if (listener != null) {
-            listener.onUpdate(100, getActivity().getString(R.string.loading_done));
-        }
-        isLoaded = true;
-        if (listener != null) {
-            listener.onComplete();
-        }
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                notifyListener(listener, 0, getActivity().getString(R.string.loading_fonts));
+                try {
+                    loadFonts();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 500);
+
+
+        Handler handler2 = new Handler(Looper.getMainLooper());
+        handler2.postDelayed(new Runnable() {
+            public void run() {
+                notifyListener(listener, 33, getActivity().getString(R.string.loading_images));
+                try {
+                    loadImages();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 1000);
+
+        Handler handler3 = new Handler(Looper.getMainLooper());
+        handler3.postDelayed(new Runnable() {
+            public void run() {
+                notifyListener(listener, 66, getActivity().getString(R.string.loading_sounds));
+                try {
+                    loadSounds();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 1500);
+
+
+        Handler handler4 = new Handler(Looper.getMainLooper());
+        handler4.postDelayed(new Runnable() {
+            public void run() {
+                notifyListener(listener, 99, getActivity().getString(R.string.loading_done));
+                isLoaded = true;
+                notifyListener(listener, 100, "");
+            }
+        }, 2000);
+
+
+        Handler handler5 = new Handler(Looper.getMainLooper());
+        handler5.postDelayed(new Runnable() {
+            public void run() {
+                notifyListener(listener, 100, "");
+            }
+        }, 2500);
+
     }
 
     public void loadResources() throws Exception {
         loadResources(null);
+    }
+
+    public void notifyListener(final IResourceLoadStatus listener, final float percent, final String msg) {
+        if (listener != null) {
+            if (percent < 100) {
+                listener.onUpdate(100, msg);
+            } else {
+                listener.onComplete();
+            }
+        }
+    }
+
+    public ITextureRegion getTextureRegion(String fileName) {
+        return textureRegionMap.get(fileName);
+    }
+
+    public TimedTiledTextureRegion getAnimationTextureRegion(String fileName) {
+        return animationTextureRegionMap.get(fileName);
+    }
+
+    public Sound getSound(String fileName) {
+        return soundMap.get(fileName);
+    }
+
+    public Font getFont(String fileName) {
+        return fontMap.get(fileName);
     }
 
     private void loadFonts() throws IOException, JSONException {
@@ -142,6 +215,7 @@ public class ResourceManager {
             TimedTiledTextureRegion animationTexture = new TimedTiledTextureRegion(ttd.getAnimationSpeed(), bitmapRegion);
             textureAtlasList.add(textureAtlas);
             animationTextureRegionMap.put(tiledTexturesName, animationTexture);
+            textureAtlas.load();
         }
     }
 
@@ -150,14 +224,21 @@ public class ResourceManager {
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath(path + "/");
         List<String> texturesNames = getAssetNameList(path, extensionToIgnore);
         for (String texturesName : texturesNames) {
-            Pair<Integer, Integer> imgSize = getImageSize(path + "/" + texturesName);
-            BitmapTextureAtlas textureAtlas = new BitmapTextureAtlas(getActivity().getTextureManager(), imgSize.first, imgSize.second, TextureOptions.BILINEAR);
-            ITextureRegion bitmapRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, getActivity(), texturesName, 0, 0);
-            textureAtlasList.add(textureAtlas);
+            ITexture mTexture = readTexture(path, texturesName);
+            mTexture.load();
+            ITextureRegion bitmapRegion = TextureRegionFactory.extractFromTexture(mTexture);
             textureRegionMap.put(texturesName, bitmapRegion);
         }
     }
 
+    private ITexture readTexture(final String path, final String texturesName) throws IOException {
+        return new BitmapTexture(getActivity().getTextureManager(), new IInputStreamOpener() {
+            @Override
+            public InputStream open() throws IOException {
+                return getActivity().getAssets().open(path + "/" + texturesName);
+            }
+        });
+    }
     private List<String> getAssetNameList(String path, List<String> ignoreExtension) throws IOException {
         List<String> assets = Arrays.asList(getActivity().getAssets().list(path));
         List<String> response = new ArrayList<>();
@@ -187,7 +268,7 @@ public class ResourceManager {
         return response;
     }
 
-    public void unloadResouces() {
+    public void unloadResources() {
         for (BitmapTextureAtlas atlas : textureAtlasList) {
             atlas.unload();
         }
@@ -200,5 +281,8 @@ public class ResourceManager {
     public interface IResourceLoadStatus{
         void onUpdate(float percent,String info);
         void onComplete();
+
+        void onFailed();
     }
+
 }
