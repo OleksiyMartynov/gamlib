@@ -18,8 +18,8 @@ public class FileDescriptionProvider extends DescriptionProvider {
 
     private List<FileDescription> descriptions;
 
-    public FileDescriptionProvider(Context c, FileDescriptionTypes fileType) throws IOException, JSONException {
-        super(c, FontDescription.FONT_DESCRIPTION_FILE);
+    public FileDescriptionProvider(Context c, FileDescriptionTypes fileType, String descriptionFileName) throws IOException, JSONException {
+        super(c, descriptionFileName);
         descriptions = new ArrayList<>();
         Object json = new JSONTokener(getJsonString()).nextValue();
         if (json instanceof JSONObject) {

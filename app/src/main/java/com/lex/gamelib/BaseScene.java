@@ -4,14 +4,14 @@ import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
 import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
-import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.ui.activity.BaseGameActivity;
 
 /**
  * Created by Oleksiy on 11/25/2015.
  */
 public abstract class BaseScene extends Scene {
 
-    protected SimpleBaseGameActivity activity;
+    protected BaseGameActivity activity;
     protected Engine engine;
     protected Camera camera;
     protected VertexBufferObjectManager vertexBufferObjectManager;

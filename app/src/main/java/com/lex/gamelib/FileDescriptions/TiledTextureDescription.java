@@ -11,6 +11,7 @@ public class TiledTextureDescription extends FileDescription {
     private String imageName;
     private int tilesRowCount;
     private int tilesColumnCount;
+    private int animationSpeed;
 
     public TiledTextureDescription(String jsonString) throws JSONException {
         JSONObject reader = new JSONObject(jsonString);
@@ -25,6 +26,7 @@ public class TiledTextureDescription extends FileDescription {
         imageName = jsonObject.getString(TiledTextureAttr.imageName.toString());
         tilesColumnCount = jsonObject.getInt(TiledTextureAttr.tilesColumnCount.toString());
         tilesRowCount = jsonObject.getInt(TiledTextureAttr.tilesRowCount.toString());
+        animationSpeed = jsonObject.getInt(TiledTextureAttr.animationSpeed.toString());
     }
 
     public String getImageName() {
@@ -37,6 +39,10 @@ public class TiledTextureDescription extends FileDescription {
 
     public int getTilesColumnCount() {
         return tilesColumnCount;
+    }
+
+    public int getAnimationSpeed() {
+        return animationSpeed;
     }
 
     @Override
@@ -54,5 +60,5 @@ public class TiledTextureDescription extends FileDescription {
         return type == getType();
     }
 
-    public enum TiledTextureAttr {imageName, tilesRowCount, tilesColumnCount}
+    public enum TiledTextureAttr {imageName, tilesRowCount, tilesColumnCount, animationSpeed}
 }

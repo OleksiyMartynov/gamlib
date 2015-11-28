@@ -8,6 +8,7 @@ import com.lex.gamelib.FileDescriptions.DescriptionProvider;
 import com.lex.gamelib.FileDescriptions.FileDescriptionProvider;
 import com.lex.gamelib.FileDescriptions.FontDescription;
 import com.lex.gamelib.FileDescriptions.TiledTextureDescription;
+import com.lex.gamelib.custom.TimedTiledTextureRegion;
 
 import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
@@ -19,12 +20,13 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
-import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.ui.activity.BaseGameActivity;
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,18 +38,22 @@ public class ResourceManager {
 
     private static ResourceManager instance;
     private boolean isLoaded = false;
-    private SimpleBaseGameActivity activity;
+    private BaseGameActivity activity;
+    private List<String> extensionToIgnore;
     private List<BitmapTextureAtlas> textureAtlasList;
     private Map<String,ITextureRegion> textureRegionMap;
-    private Map<String,TiledTextureRegion> tiledTextureRegionMap;
+    private Map<String, TimedTiledTextureRegion> animationTextureRegionMap;
     private Map<String, Sound> soundMap;
     private Map<String,Font> fontMap;
     private ResourceManager(){
         textureAtlasList = new ArrayList<>();
         textureRegionMap = new HashMap<>();
-        tiledTextureRegionMap = new HashMap<>();
+        animationTextureRegionMap = new HashMap<>();
         fontMap = new HashMap<>();
         soundMap = new HashMap<>();
+        extensionToIgnore = new ArrayList<>();
+        extensionToIgnore.add(".json");
+
     }
 
     public static ResourceManager getInstance(){
@@ -57,11 +63,11 @@ public class ResourceManager {
         return instance;
     }
 
-    public void init(SimpleBaseGameActivity activity) {
+    public void init(BaseGameActivity activity) {
         instance.activity = activity;
     }
 
-    public SimpleBaseGameActivity getActivity() {
+    public BaseGameActivity getActivity() {
         return instance.activity;
     }
 
@@ -99,9 +105,9 @@ public class ResourceManager {
     }
 
     private void loadFonts() throws IOException, JSONException {
-        FileDescriptionProvider fontInfo = new FileDescriptionProvider(getActivity(), DescriptionProvider.FileDescriptionTypes.FontFileDescription);
+        FileDescriptionProvider fontInfo = new FileDescriptionProvider(getActivity(), DescriptionProvider.FileDescriptionTypes.FontFileDescription, AssetFolders.Fonts + "/" + FontDescription.FONT_DESCRIPTION_FILE);
         FontFactory.setAssetBasePath(AssetFolders.Fonts + "/");
-        String[] fontNames = getAssetNameList(AssetFolders.Sounds.toString());
+        List<String> fontNames = getAssetNameList(AssetFolders.Sounds.toString(), extensionToIgnore);
         for (String fontName : fontNames) {
             FontDescription fd = (FontDescription) fontInfo.getDescriptionForFile(fontName);
             ITexture fontTexture2 = new BitmapTextureAtlas(getActivity().getTextureManager(), fd.getFontSpriteWidth(), fd.getFontSpriteHeight(), TextureOptions.BILINEAR);
@@ -112,7 +118,7 @@ public class ResourceManager {
     }
 
     private void loadSounds() throws IOException {
-        String[] soundNames = getAssetNameList(AssetFolders.Sounds.toString());
+        List<String> soundNames = getAssetNameList(AssetFolders.Sounds.toString(), extensionToIgnore);
         for (String soundName : soundNames) {
             soundMap.put(soundName, SoundFactory.createSoundFromAsset(getActivity().getEngine().getSoundManager(), getActivity(), AssetFolders.Sounds.toString() + "/" + soundName));
         }
@@ -124,26 +130,27 @@ public class ResourceManager {
     }
 
     private void loadTiledTextures() throws IOException, JSONException {
-        FileDescriptionProvider fontInfo = new FileDescriptionProvider(getActivity(), DescriptionProvider.FileDescriptionTypes.TiledTexturesFileDescription);
         String path = AssetFolders.Images + "/" + ImageFolders.TiledTextures;
-        BitmapTextureAtlasTextureRegionFactory.setAssetBasePath(path);
-        String[] tiledTexturesNames = getAssetNameList(path);
+        FileDescriptionProvider fontInfo = new FileDescriptionProvider(getActivity(), DescriptionProvider.FileDescriptionTypes.TiledTexturesFileDescription, path + "/" + TiledTextureDescription.TEXTURE_DESCRIPTION_FILE);
+        BitmapTextureAtlasTextureRegionFactory.setAssetBasePath(path + "/");
+        List<String> tiledTexturesNames = getAssetNameList(path, extensionToIgnore);
         for (String tiledTexturesName : tiledTexturesNames) {
             TiledTextureDescription ttd = (TiledTextureDescription) fontInfo.getDescriptionForFile(tiledTexturesName);
-            Pair<Integer, Integer> imgSize = getImageSize(path);
+            Pair<Integer, Integer> imgSize = getImageSize(path + "/" + tiledTexturesName);
             BitmapTextureAtlas textureAtlas = new BitmapTextureAtlas(getActivity().getTextureManager(), imgSize.first, imgSize.second, TextureOptions.BILINEAR);
             TiledTextureRegion bitmapRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(textureAtlas, getActivity(), tiledTexturesName, 0, 0, ttd.getTilesColumnCount(), ttd.getTilesRowCount());
+            TimedTiledTextureRegion animationTexture = new TimedTiledTextureRegion(ttd.getAnimationSpeed(), bitmapRegion);
             textureAtlasList.add(textureAtlas);
-            tiledTextureRegionMap.put(tiledTexturesName, bitmapRegion);
+            animationTextureRegionMap.put(tiledTexturesName, animationTexture);
         }
     }
 
     private void loadTextures() throws IOException {
         String path = AssetFolders.Images + "/" + ImageFolders.Textures;
-        BitmapTextureAtlasTextureRegionFactory.setAssetBasePath(path);
-        String[] texturesNames = getAssetNameList(path);
+        BitmapTextureAtlasTextureRegionFactory.setAssetBasePath(path + "/");
+        List<String> texturesNames = getAssetNameList(path, extensionToIgnore);
         for (String texturesName : texturesNames) {
-            Pair<Integer, Integer> imgSize = getImageSize(path);
+            Pair<Integer, Integer> imgSize = getImageSize(path + "/" + texturesName);
             BitmapTextureAtlas textureAtlas = new BitmapTextureAtlas(getActivity().getTextureManager(), imgSize.first, imgSize.second, TextureOptions.BILINEAR);
             ITextureRegion bitmapRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(textureAtlas, getActivity(), texturesName, 0, 0);
             textureAtlasList.add(textureAtlas);
@@ -151,8 +158,23 @@ public class ResourceManager {
         }
     }
 
-    private String[] getAssetNameList(String path) throws IOException {
-        return getActivity().getAssets().list(path);
+    private List<String> getAssetNameList(String path, List<String> ignoreExtension) throws IOException {
+        List<String> assets = Arrays.asList(getActivity().getAssets().list(path));
+        List<String> response = new ArrayList<>();
+        for (String asset : assets) {
+            boolean good = true;
+            for (String ext : ignoreExtension) {
+                if (asset.endsWith(ext)) {
+                    good = false;
+                }
+            }
+            if (good) {
+                response.add(asset);
+            }
+        }
+
+
+        return response;
     }
 
     private Pair<Integer, Integer> getImageSize(String filePath) throws IOException {
