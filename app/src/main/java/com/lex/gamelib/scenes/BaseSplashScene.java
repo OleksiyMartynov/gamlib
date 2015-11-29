@@ -6,7 +6,6 @@ import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.text.TextOptions;
-import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.font.Font;
 import org.andengine.util.adt.align.HorizontalAlign;
@@ -37,7 +36,7 @@ public abstract class BaseSplashScene extends BaseScene implements ResourceManag
     @Override
     public void createScene() {
 
-        engine.registerUpdateHandler(new FPSLogger());
+        //engine.registerUpdateHandler(new FPSLogger());
         if (backgroundSprite != null) {
             attachChild(backgroundSprite);
         }
@@ -59,7 +58,7 @@ public abstract class BaseSplashScene extends BaseScene implements ResourceManag
 
     @Override
     public void onBackKeyPressed() {
-        activity.finish();
+        activity.onBackPressed();
     }
 
     @Override

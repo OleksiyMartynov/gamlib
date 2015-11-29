@@ -15,6 +15,8 @@ import com.lex.gamelib.custom.TimedTiledTextureRegion;
 
 import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
+import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.ITexture;
@@ -171,6 +173,17 @@ public class ResourceManager {
 
     public Sound getSound(String fileName) {
         return soundMap.get(fileName);
+    }
+
+    public Sprite getSprite(String fileName) {
+        return new Sprite(0, 0, getTextureRegion(fileName), getActivity().getVertexBufferObjectManager());
+    }
+
+    public AnimatedSprite getAnimatedSprite(String fileName) {
+        TimedTiledTextureRegion timedTiledTextureRegion = getAnimationTextureRegion(fileName);
+        AnimatedSprite animatedSprite = new AnimatedSprite(0.0f, 0.0f, timedTiledTextureRegion.getTextureRegion(), getActivity().getVertexBufferObjectManager());
+        animatedSprite.animate(timedTiledTextureRegion.getAnimationSpeed());
+        return animatedSprite;
     }
 
     public Font getFont(String fileName) {

@@ -1,11 +1,16 @@
 package com.lex.gamelib.scenes;
 
+import android.hardware.SensorManager;
+
+import com.badlogic.gdx.math.Vector2;
 import com.lex.gamelib.manager.ResourceManager;
 import com.lex.gamelib.manager.SceneManager;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.scene.Scene;
+import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.BaseGameActivity;
 
@@ -20,8 +25,21 @@ public abstract class BaseScene extends Scene {
     protected VertexBufferObjectManager vertexBufferObjectManager;
     protected ResourceManager resourceManager;
     protected SceneManager sceneManager;
+    protected PhysicsWorld world;
 
     public BaseScene() {
+        world = new PhysicsWorld(new Vector2(0, -SensorManager.GRAVITY_EARTH), false);
+        registerUpdateHandler(new IUpdateHandler() {
+            @Override
+            public void onUpdate(float pSecondsElapsed) {
+                world.onUpdate(pSecondsElapsed);
+            }
+
+            @Override
+            public void reset() {
+
+            }
+        });
         resourceManager = ResourceManager.getInstance();
         activity = resourceManager.getActivity();
         vertexBufferObjectManager = activity.getVertexBufferObjectManager();
@@ -39,11 +57,15 @@ public abstract class BaseScene extends Scene {
 
     public abstract void disposeScene();
 
-    public int getScreenWidth(){
-        return (int)camera.getWidth();
+    public float getCameraWidth() {
+        return camera.getWidth();
     }
 
-    public int getScreenHeight(){
-        return (int)camera.getHeight();
+    public float getCameraHeight() {
+        return camera.getHeight();
+    }
+
+    public PhysicsWorld getWorld() {
+        return world;
     }
 }
