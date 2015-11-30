@@ -5,6 +5,7 @@ import android.hardware.SensorManager;
 import com.badlogic.gdx.math.Vector2;
 import com.lex.gamelib.manager.ResourceManager;
 import com.lex.gamelib.manager.SceneManager;
+import com.lex.gamelib.objects.WorldEntity;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
@@ -13,6 +14,9 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.BaseGameActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Oleksiy on 11/25/2015.
@@ -26,6 +30,9 @@ public abstract class BaseScene extends Scene {
     protected ResourceManager resourceManager;
     protected SceneManager sceneManager;
     protected PhysicsWorld world;
+    private List<WorldEntity> entitiesToRemove = new ArrayList<>();
+    private List<Runnable> runOnUpdate = new ArrayList<>();
+
 
     public BaseScene() {
         world = new PhysicsWorld(new Vector2(0, -SensorManager.GRAVITY_EARTH), false);
@@ -47,6 +54,7 @@ public abstract class BaseScene extends Scene {
         camera = engine.getCamera();
         sceneManager = SceneManager.getInstance();
         createScene();
+        registerUpdateHandler(createUpdateHandler());
     }
 
     public abstract void createScene();
@@ -65,7 +73,46 @@ public abstract class BaseScene extends Scene {
         return camera.getHeight();
     }
 
+    public Camera getCamera() {
+        return camera;
+    }
+
     public PhysicsWorld getWorld() {
         return world;
+    }
+
+    private IUpdateHandler createUpdateHandler() {
+        return new IUpdateHandler() {
+            @Override
+            public void onUpdate(float pSecondsElapsed) {
+
+                if (runOnUpdate.size() > 0) {
+                    for (Runnable r : runOnUpdate) {
+                        r.run();
+                    }
+                    runOnUpdate.clear();
+                }
+
+                if (entitiesToRemove.size() > 0) {
+                    for (WorldEntity entity : entitiesToRemove) {
+                        entity.destroySelf();
+                    }
+                    entitiesToRemove.clear();
+                }
+            }
+
+            @Override
+            public void reset() {
+
+            }
+        };
+    }
+
+    public void removeEntity(WorldEntity entity) {
+        entitiesToRemove.add(entity);
+    }
+
+    public void runOnUpdate(Runnable r) {
+        runOnUpdate.add(r);
     }
 }

@@ -176,13 +176,22 @@ public class ResourceManager {
     }
 
     public Sprite getSprite(String fileName) {
-        return new Sprite(0, 0, getTextureRegion(fileName), getActivity().getVertexBufferObjectManager());
+        ITextureRegion tr = getTextureRegion(fileName);
+        if(tr == null)
+        {
+            return null;
+        }
+        return new Sprite(0, 0, tr , getActivity().getVertexBufferObjectManager());
     }
 
     public AnimatedSprite getAnimatedSprite(String fileName) {
+        return getAnimatedSprite(fileName,null);
+    }
+
+    public AnimatedSprite getAnimatedSprite(String fileName, AnimatedSprite.IAnimationListener animationListener) {
         TimedTiledTextureRegion timedTiledTextureRegion = getAnimationTextureRegion(fileName);
         AnimatedSprite animatedSprite = new AnimatedSprite(0.0f, 0.0f, timedTiledTextureRegion.getTextureRegion(), getActivity().getVertexBufferObjectManager());
-        animatedSprite.animate(timedTiledTextureRegion.getAnimationSpeed());
+        animatedSprite.animate(timedTiledTextureRegion.getAnimationSpeed(),animationListener);
         return animatedSprite;
     }
 
