@@ -9,6 +9,7 @@ import com.lex.gamelib.scenes.BaseScene;
 import org.andengine.entity.primitive.Line;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.extension.physics.box2d.util.Vector2Pool;
 import org.andengine.extension.physics.box2d.util.constants.PhysicsConstants;
 
 /**
@@ -41,12 +42,22 @@ public class WorldJoint {
     }
 
     public WorldJoint(BaseScene scene, PhysicsWorld world, final WorldEntity one, final WorldEntity two, String lineImage) {
-        //todo fix this logic
+
         this.lineEntity = new WorldEntity.WorldEntityBuilder(lineImage, scene, BodyDef.BodyType.StaticBody, "joint")
                 .setDisableCollision(true)
-                .setPosition(one.getSpriteCenterX(), one.getSpriteCenterY())
                 .build();
-        this.lineEntity.getSprite().setScale(0.1f);
+
+        final Vector2 twoWorldCenter = two.getBody().getWorldCenter();
+        final Vector2 oneWorldCenter = one.getBody().getWorldCenter();
+        lineEntity.getSprite().setX((oneWorldCenter.x + twoWorldCenter.x) / 2 * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+        lineEntity.getSprite().setY((oneWorldCenter.y + twoWorldCenter.y) / 2 * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+        lineEntity.rotate(oneWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, oneWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+
+        float width = Vector2Pool.obtain(one.getBody().getWorldCenter().x - two.getBody().getWorldCenter().x, one.getBody().getWorldCenter().y - two.getBody().getWorldCenter().y).len() * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
+        float sHeight = this.lineEntity.getSprite().getHeight() * width / this.lineEntity.getSprite().getWidth();
+        this.lineEntity.getSprite().setWidth(width);
+        this.lineEntity.getSprite().setHeight(sHeight);
+
         this.scene = scene;
         joint = new DistanceJointDef();
         joint.initialize(one.getBody(), two.getBody(), one.getBody().getWorldCenter(), two.getBody().getWorldCenter());
@@ -57,7 +68,8 @@ public class WorldJoint {
                 super.onUpdate(pSecondsElapsed);
                 final Vector2 twoWorldCenter = two.getBody().getWorldCenter();
                 final Vector2 oneWorldCenter = one.getBody().getWorldCenter();
-                lineEntity.getSprite().setPosition(oneWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, oneWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+                lineEntity.getSprite().setX((oneWorldCenter.x + twoWorldCenter.x) / 2 * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+                lineEntity.getSprite().setY((oneWorldCenter.y + twoWorldCenter.y) / 2 * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
                 lineEntity.rotate(oneWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, oneWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
             }
         });
@@ -72,4 +84,5 @@ public class WorldJoint {
         }
     }
     //todo: destory offscreen
+    //todo: create builder class
 }
