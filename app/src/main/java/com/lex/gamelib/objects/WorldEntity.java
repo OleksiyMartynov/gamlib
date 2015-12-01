@@ -78,6 +78,23 @@ public class WorldEntity implements AnimatedSprite.IAnimationListener {
         };
     }
 
+    public float getSpriteCenterX() {
+        float anchorFaceX = sprite.getX();
+        float spriteWidth = sprite.getWidth();
+        return anchorFaceX + spriteWidth / 2;
+    }
+
+    public float getSpriteCenterY() {
+        float anchorFaceY = sprite.getY();
+        float spriteHeight = sprite.getHeight();
+        return anchorFaceY + spriteHeight / 2;
+    }
+
+    public void rotate(float startX, float startY, float targetX, float targetY) {
+        float a = 270 + (float) Math.toDegrees(Math.atan2((targetX - sprite.getRotationCenterX() - startX), (targetY - sprite.getRotationCenterY() - startY)));
+        sprite.setRotation(a);
+    }
+
     public void setDisableCollision(boolean disable) {
         isCollisionDisabled = disable;
         for (int i = 0; i < body.getFixtureList().size(); i++) {
@@ -171,7 +188,8 @@ public class WorldEntity implements AnimatedSprite.IAnimationListener {
 
         //default
         private BodyShape bodyShape;
-        private float density, elasticity, friction, positionX, positionY;
+        private float density = 1.0f;
+        private float elasticity, friction, positionX, positionY;
         private boolean updateRotation = true;
         private boolean disableCollision = false;
         private boolean destroyWhenOffscreen = false;
