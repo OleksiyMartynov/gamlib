@@ -187,7 +187,7 @@ public class WorldEntity implements AnimatedSprite.IAnimationListener {
         private String spriteTag;
 
         //default
-        private BodyShape bodyShape;
+        private BodyShape bodyShape = BodyShape.rectangle;
         private float density = 1.0f;
         private float elasticity, friction, positionX, positionY;
         private boolean updateRotation = true;

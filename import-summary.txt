@@ -7,62 +7,43 @@ The following files were *not* copied into the new Gradle project; you
 should evaluate whether these are still needed in your project and if
 so manually move them:
 
-From AndEngine:
-* .gitignore
-* AUTHORS.md
-* LICENSE.md
 * README.md
-* build.xml
-* checkstyle.xml
-* ext\
-* ext\img\
-* ext\img\android.svg
-* ext\img\badge.png
-* ext\img\badge.svg
-* ext\img\badge_xlarge.png
-* ext\img\clapboard.png
-* ext\img\clapboard.svg
-* ext\img\favicon.png
-* ext\img\favicon.svg
-* ext\img\icon.svg
-* ext\img\logo.png
-* ext\img\logo.svg
-* ext\img\logo_icon.svg
-* ext\img\source.png
-* ext\img\source.svg
-* ext\img\splash.png
-* ext\img\splash.svg
-* ext\libs\
-* ext\libs\ant-contrib-1.0b3.jar
-* ext\scripts\
-* ext\scripts\build_texturepacks.sh
-* git-rank-contributors.rb
-* proguard-project.txt
-From AndEnginePhysicsBox2DExtension:
-* .gitignore
-* UPDATE_LIBGDX_SOURCES.bat
-* build.xml
-* proguard-project.txt
+* default.properties
+* lib\
+* lib\AndEngineBox2DPack.jar
+* out\
+* out\production\
+* out\production\PhysicsEditorExample\
+* out\production\PhysicsEditorExample\PhysicsEditorExample.apk
+* out\production\PhysicsEditorExample\PhysicsEditorExample.apk.res
+* out\production\PhysicsEditorExample\PhysicsEditorExample.apk.unaligned
+* out\production\PhysicsEditorExample\classes.dex
+* out\production\PhysicsEditorExample\com\
+* out\production\PhysicsEditorExample\com\example\
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\PhysicsEditorExample.class
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\PhysicsEditorShapeLibrary$1.class
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\PhysicsEditorShapeLibrary$BodyTemplate.class
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\PhysicsEditorShapeLibrary$FixtureTemplate.class
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\PhysicsEditorShapeLibrary$PolygonTemplate.class
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\PhysicsEditorShapeLibrary$ShapeLoader.class
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\PhysicsEditorShapeLibrary.class
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\R$attr.class
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\R$drawable.class
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\R$string.class
+* out\production\PhysicsEditorExample\com\example\PhysicsEditorExample\R.class
 
 Moved Files:
 ------------
 Android Gradle projects use a different directory structure than ADT
 Eclipse projects. Here's how the projects were restructured:
 
-In AndEngine:
-* AndroidManifest.xml => andEngine\src\main\AndroidManifest.xml
-* jni\ => andEngine\src\main\jni\
-* libs\armeabi-v7a\libandengine.so => andEngine\src\main\jniLibs\armeabi-v7a\libandengine.so
-* libs\armeabi\libandengine.so => andEngine\src\main\jniLibs\armeabi\libandengine.so
-* libs\mips\libandengine.so => andEngine\src\main\jniLibs\mips\libandengine.so
-* libs\x86\libandengine.so => andEngine\src\main\jniLibs\x86\libandengine.so
-* res\ => andEngine\src\main\res\
-* src\ => andEngine\src\main\java\
-In AndEnginePhysicsBox2DExtension:
-* AndroidManifest.xml => andEnginePhysicsBox2DExtension\src\main\AndroidManifest.xml
-* jni\ => andEnginePhysicsBox2DExtension\src\main\jni\
-* res\ => andEnginePhysicsBox2DExtension\src\main\res\
-* src\ => andEnginePhysicsBox2DExtension\src\main\java\
+* AndroidManifest.xml => physicsEditorAndEnginemaster\src\main\AndroidManifest.xml
+* assets\ => physicsEditorAndEnginemaster\src\main\assets\
+* libs\armeabi-v7a\libandenginephysicsbox2dextension.so => physicsEditorAndEnginemaster\src\main\jniLibs\armeabi-v7a\libandenginephysicsbox2dextension.so
+* libs\armeabi\libandenginephysicsbox2dextension.so => physicsEditorAndEnginemaster\src\main\jniLibs\armeabi\libandenginephysicsbox2dextension.so
+* res\ => physicsEditorAndEnginemaster\src\main\res\
+* src\ => physicsEditorAndEnginemaster\src\main\java\
 
 Next Steps:
 -----------

@@ -41,7 +41,7 @@ public class WorldJoint {
         this.line = line;
     }
 
-    public WorldJoint(BaseScene scene, PhysicsWorld world, final WorldEntity one, final WorldEntity two, String lineImage) {
+    public WorldJoint(BaseScene scene, PhysicsWorld world, final WorldEntity one, final WorldEntity two, String lineImage, final float spriteRotation) {
 
         this.lineEntity = new WorldEntity.WorldEntityBuilder(lineImage, scene, BodyDef.BodyType.StaticBody, "joint")
                 .setDisableCollision(true)
@@ -51,7 +51,7 @@ public class WorldJoint {
         final Vector2 oneWorldCenter = one.getBody().getWorldCenter();
         lineEntity.getSprite().setX((oneWorldCenter.x + twoWorldCenter.x) / 2 * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
         lineEntity.getSprite().setY((oneWorldCenter.y + twoWorldCenter.y) / 2 * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
-        lineEntity.rotate(oneWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, oneWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+        lineEntity.rotate(spriteRotation+oneWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, oneWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
 
         float width = Vector2Pool.obtain(one.getBody().getWorldCenter().x - two.getBody().getWorldCenter().x, one.getBody().getWorldCenter().y - two.getBody().getWorldCenter().y).len() * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT;
         float sHeight = this.lineEntity.getSprite().getHeight() * width / this.lineEntity.getSprite().getWidth();
@@ -70,7 +70,7 @@ public class WorldJoint {
                 final Vector2 oneWorldCenter = one.getBody().getWorldCenter();
                 lineEntity.getSprite().setX((oneWorldCenter.x + twoWorldCenter.x) / 2 * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
                 lineEntity.getSprite().setY((oneWorldCenter.y + twoWorldCenter.y) / 2 * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
-                lineEntity.rotate(oneWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, oneWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+                lineEntity.rotate(spriteRotation+oneWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, oneWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.x * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, twoWorldCenter.y * PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
             }
         });
     }
