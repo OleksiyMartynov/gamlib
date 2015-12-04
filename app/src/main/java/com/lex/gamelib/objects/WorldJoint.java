@@ -41,7 +41,7 @@ public class WorldJoint {
         this.line = line;
     }
 
-    public WorldJoint(BaseScene scene, PhysicsWorld world, final WorldEntity one, final WorldEntity two, String lineImage, final float spriteRotation) {
+    public WorldJoint(BaseScene scene, PhysicsWorld world, final WorldEntity one, final WorldEntity two, String lineImage, final float spriteRotation, boolean updateRotation, boolean updatePosition) {
 
         this.lineEntity = new WorldEntity.WorldEntityBuilder(lineImage, scene, BodyDef.BodyType.StaticBody, "joint")
                 .setDisableCollision(true)
@@ -62,7 +62,7 @@ public class WorldJoint {
         joint = new DistanceJointDef();
         joint.initialize(one.getBody(), two.getBody(), one.getBody().getWorldCenter(), two.getBody().getWorldCenter());
         this.world = world;
-        this.world.registerPhysicsConnector(new PhysicsConnector(one.getSprite(), one.getBody(), true, true) {
+        this.world.registerPhysicsConnector(new PhysicsConnector(one.getSprite(), one.getBody(), updatePosition, updateRotation) {
             @Override
             public void onUpdate(final float pSecondsElapsed) {
                 super.onUpdate(pSecondsElapsed);
@@ -83,6 +83,11 @@ public class WorldJoint {
             lineEntity.present();
         }
     }
+
+    public DistanceJointDef getJoint() {
+        return joint;
+    }
+
     //todo: destory offscreen
     //todo: create builder class
 }

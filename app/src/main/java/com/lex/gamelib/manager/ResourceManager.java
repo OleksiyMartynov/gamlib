@@ -2,8 +2,6 @@ package com.lex.gamelib.manager;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Pair;
 
 import com.lex.gamelib.FileDescriptions.DescriptionProvider;
@@ -88,64 +86,37 @@ public class ResourceManager {
             throw new Exception("Resources already loaded.");
         }
 
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                notifyListener(listener, 0, getActivity().getString(R.string.loading_fonts));
-                try {
-                    loadFonts();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 500);
+        notifyListener(listener, 0, getActivity().getString(R.string.loading_fonts));
+        try {
+            loadFonts();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 
-        Handler handler2 = new Handler(Looper.getMainLooper());
-        handler2.postDelayed(new Runnable() {
-            public void run() {
-                notifyListener(listener, 33, getActivity().getString(R.string.loading_images));
-                try {
-                    loadImages();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 1000);
+        notifyListener(listener, 33, getActivity().getString(R.string.loading_images));
+        try {
+            loadImages();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        Handler handler3 = new Handler(Looper.getMainLooper());
-        handler3.postDelayed(new Runnable() {
-            public void run() {
-                notifyListener(listener, 66, getActivity().getString(R.string.loading_sounds));
-                try {
-                    loadSounds();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 1500);
+        notifyListener(listener, 66, getActivity().getString(R.string.loading_sounds));
+        try {
+            loadSounds();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
-        Handler handler4 = new Handler(Looper.getMainLooper());
-        handler4.postDelayed(new Runnable() {
-            public void run() {
-                notifyListener(listener, 99, getActivity().getString(R.string.loading_done));
-                isLoaded = true;
-                notifyListener(listener, 100, "");
-            }
-        }, 2000);
+        notifyListener(listener, 99, getActivity().getString(R.string.loading_done));
+        isLoaded = true;
+        notifyListener(listener, 100, "");
 
-
-        Handler handler5 = new Handler(Looper.getMainLooper());
-        handler5.postDelayed(new Runnable() {
-            public void run() {
-                notifyListener(listener, 100, "");
-            }
-        }, 2500);
 
     }
 

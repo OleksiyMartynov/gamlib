@@ -9,6 +9,7 @@ import com.lex.gamelib.objects.WorldEntity;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.camera.ZoomCamera;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.scene.Scene;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
@@ -25,7 +26,7 @@ public abstract class BaseScene extends Scene {
 
     protected BaseGameActivity activity;
     protected Engine engine;
-    protected Camera camera;
+    protected ZoomCamera camera;
     protected VertexBufferObjectManager vertexBufferObjectManager;
     protected ResourceManager resourceManager;
     protected SceneManager sceneManager;
@@ -51,7 +52,7 @@ public abstract class BaseScene extends Scene {
         activity = resourceManager.getActivity();
         vertexBufferObjectManager = activity.getVertexBufferObjectManager();
         engine = activity.getEngine();
-        camera = engine.getCamera();
+        camera = (ZoomCamera) engine.getCamera();
         sceneManager = SceneManager.getInstance();
         createScene();
         registerUpdateHandler(createUpdateHandler());
